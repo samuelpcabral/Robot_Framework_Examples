@@ -17,7 +17,7 @@ Checkbox
     Click Check All
     Verify All Checkbox Check
     Click Uncheck All
-    Verify ALl Checkbox Uncheck
+    Verify All Checkbox Uncheck
 
 *** Keywords ***
 Open Web Page
@@ -58,7 +58,7 @@ Verify All Checkbox Check
         Checkbox Should Be Selected    ${checkbox_number}
     END
 
-Verify ALl Checkbox Uncheck
+Verify All Checkbox Uncheck
     Capture Page Screenshot
     FOR    ${number}    IN RANGE    1    5
         ${checkbox_number}    Replace Variables    ${checkbox}
