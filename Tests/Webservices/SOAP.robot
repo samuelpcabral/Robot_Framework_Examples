@@ -4,7 +4,6 @@ Library           Collections
 Library           DateTime
 Library           JSONLibrary
 
-
 *** Variables ***
 # ipGeo
 ${wsdl_ip_geo}       http://ws.cdyne.com/ip2geo/ip2geo.asmx?wsdl
@@ -15,31 +14,33 @@ ${wsdl_correios}     https://apps.correios.com.br/SigepMasterJPA/AtendeClienteSe
 # Holidays
 ${wsdl_holidays}     http://services.sapo.pt/Metadata/Contract/Holiday?culture=PT?wsdl
 
-
 *** Test Cases ***
 ipGeo getData
     [Documentation]    Simple request to SOAP webservice and get response by tags
+    [Tags]    Webservice
     Connect ipGeo API
     List ipGeo Info
 
 ipGeo getData with XML
     [Documentation]    Request to SOAP webservice passing XML in body and response converted to dictionary
+    [Tags]    Webservice
     Fill XML ip template
     Connect ipGeo API
     List ipGeo Info with XML
 
 PostOffice_GetAddress
     [Documentation]    Request to SOAP webservice passing XML in body and response as XML object
+    [Tags]    Webservice
     Fill XML po template
     Connect Post Office API
     List address information
 
 List All City Holidays
     [Documentation]    Request to SOAP webservice and using dynamic keywords, also using log as an html table
+    [Tags]    Webservice
     Connect Holidays API
     List "Fundão" Holidays "2020"
     List "Lisboa" Holidays "2021"
-
 
 *** Keywords ***
 Connect ipGeo API

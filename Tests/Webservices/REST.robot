@@ -9,18 +9,18 @@ Library           Collections
 # Github
 ${user}      samuelpcabral
 
-
 *** Test Cases ***
 Open_Weather
     [Documentation]    Call to REST webservice passing parameters.
+    [Tags]    Webservice
     Connect OpenWeather API
     Show City Information
 
 Get Github User
     [Documentation]    Retrive information about an user in github.
+    [Tags]    Webservice
     Connect Github API
     Show user Information    ${user}
-
 
 *** Keywords ***
 Connect OpenWeather API
