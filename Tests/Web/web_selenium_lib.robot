@@ -8,10 +8,10 @@ Library           Keywords.py
 Variables         Variables.py
 
 *** Test Cases ***
-Checkbox
+Verify Checkbox
     [Documentation]    This test randomly marks 1 of the 4 checkboxes on the page and checks whether it is actually
     ...    checked. After that, the functionality of the "check all" button is tested.
-    [Tags]    Web
+    [Tags]    Web    Selenium
     Open Checkbox Menu
     Click Random Checkbox
     Click Check All

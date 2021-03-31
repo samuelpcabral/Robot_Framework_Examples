@@ -10,7 +10,7 @@ Library           Collections
 ${user}      samuelpcabral
 
 *** Test Cases ***
-Open_Weather
+Open Weather
     [Documentation]    Call to REST webservice passing parameters.
     [Tags]    Webservice
     Connect OpenWeather API
@@ -28,17 +28,16 @@ Connect OpenWeather API
 
 Show City Information
     [Documentation]    Getting the same information in two different ways. (The city is on parameter 'id')
-    ${response}=    Get Request    OpenWeather    /data/2.5/weather    params=&{params}
+    ${response}    GET On Session    OpenWeather    /data/2.5/weather    params=&{params}
     Log    Status code = ${response.status_code}
     comment    Complete response as pretty print JSON
-    ${response_json}=    To Json    ${response.content}    pretty_print=True
-    Log    ${response_json}
+    ${response_json}    Set Variable    ${response.json()}
+    Log    ${response_json}    repr=True
     comment    Accessing the values individually
     Log    City: ${response.json()["name"]}
     Log    Temperature: ${response.json()["main"]["temp"]}
     Log    Clime: ${response.json()["weather"][0]["main"]}
     comment    Handling the response as a JSON
-    ${response_json}    Set Variable    ${response.json()}
     ${city}    Get Value From Json    ${response_json}    $.name
     ${temperature}    Get Value From Json    ${response_json}    $.main.temp
     ${clime}    Get Value From Json    ${response_json}    $.weather[0].main
@@ -51,14 +50,13 @@ Connect Github API
 
 Show user Information
     [Arguments]    ${username}
-    ${response}=    Get Request    github    /users/${username}
+    ${response}    GET On Session    github    /users/${username}
     Log    ${response.json()["name"]}
     Log    ${response.json()["location"]}
-    comment    Convert response as JSON to pretty print
-    ${response_as_json}=    To Json    ${response.content}    pretty_print=True
-    Log    ${response_as_json}
-    comment    Convert all response as JSON to acces values with json path
+    comment    Complete response as pretty print JSON
     ${response_json}    Set Variable    ${response.json()}
+    Log    ${response_json}    repr=True
+    comment    Handling the response as a JSON
     ${name}    Get Value From Json    ${response_json}    $..name
     ${location}    Get Value From Json    ${response_json}    $..location
     Log    ${name[0]}

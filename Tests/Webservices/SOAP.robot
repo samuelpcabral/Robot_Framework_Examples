@@ -39,8 +39,8 @@ List All City Holidays
     [Documentation]    Request to SOAP webservice and using dynamic keywords, also using log as an html table
     [Tags]    Webservice
     Connect Holidays API
-    List "Fundão" Holidays "2020"
-    List "Lisboa" Holidays "2021"
+    List "Fundão" Holidays "2021"
+    List "Lisboa" Holidays "2022"
 
 *** Keywords ***
 Connect ipGeo API
@@ -114,7 +114,10 @@ Get city Id
     FOR    ${index}    IN RANGE    ${len}
         ${id}    Set Variable    ${response[${index}]['Municipality']['Id']}
         ${name}    Set Variable    ${response[${index}]['Municipality']['Name']}
-        ${city_id}    Set Variable If    '${name}'=='${city}'    ${id}
-        Exit For Loop If    '${name}'=='${city}'
+        comment    New IF syntax in Robot 4.0
+        IF    '${name}'=='${city}'
+            ${city_id}    Set Variable    ${id}
+            Exit For Loop
+        END
     END
     [Return]    ${city_id}
