@@ -17,27 +17,27 @@ ${wsdl_holidays}     http://services.sapo.pt/Metadata/Contract/Holiday?culture=P
 *** Test Cases ***
 ipGeo getData
     [Documentation]    Simple request to SOAP webservice and get response by tags
-    [Tags]    Webservice
+    [Tags]    Webservice    SOAP
     Connect ipGeo API
     List ipGeo Info
 
 ipGeo getData with XML
     [Documentation]    Request to SOAP webservice passing XML in body and response converted to dictionary
-    [Tags]    Webservice
+    [Tags]    Webservice    SOAP
     Fill XML ip template
     Connect ipGeo API
     List ipGeo Info with XML
 
 PostOffice_GetAddress
     [Documentation]    Request to SOAP webservice passing XML in body and response as XML object
-    [Tags]    Webservice
+    [Tags]    Webservice    SOAP
     Fill XML po template
     Connect Post Office API
     List address information
 
 List All City Holidays
     [Documentation]    Request to SOAP webservice and using dynamic keywords, also using log as an html table
-    [Tags]    Webservice
+    [Tags]    Webservice    SOAP
     Connect Holidays API
     List "Fundão" Holidays "2021"
     List "Lisboa" Holidays "2022"
