@@ -5,59 +5,54 @@ Library           Collections
 
 *** Variables ***
 # Open Weather
+${weather_url}    http://api.openweathermap.org/data/2.5/weather
 &{params}    id=2739187    appid=921689f02b330ad351a53b601daf96bc    units=metric
+
 # Github
-${user}      samuelpcabral
+${github_url}    http://api.github.com/users/
 
 *** Test Cases ***
 Open Weather
-    [Documentation]    Call to REST webservice passing parameters.
-    [Tags]    Webservice
-    Connect OpenWeather API
-    Show City Information
+    [Documentation]    Call to Open Weather REST API passing parameters.
+    [Tags]    Webservice    REST
+    Get OpenWeather API data
+    Show City "country" Information
+    Show City "name" Information
+    Show City "temp_max" Information
+    Show City "temp_min" Information
 
-Get Github User
-    [Documentation]    Retrive information about an user in github.
-    [Tags]    Webservice
-    Connect Github API
-    Show user Information    ${user}
+Show Github User Data
+    [Documentation]    Retrive information about an user in github API.
+    [Tags]    Webservice    REST
+    Get Github user "samuelpcabral" API data
+    Show user "name" Information
+    Show user "location" Information
+    Show user "company" Information
+    Get Github user "john" API data
+    Show user "name" Information
+    Show user "followers" Information
+    Show user "following" Information
 
 *** Keywords ***
-Connect OpenWeather API
-    Create Session    OpenWeather    http://api.openweathermap.org    disable_warnings=1
-
-Show City Information
-    [Documentation]    Getting the same information in two different ways. (The city is on parameter 'id')
-    ${response}    GET On Session    OpenWeather    /data/2.5/weather    params=&{params}
-    Log    Status code = ${response.status_code}
-    comment    Complete response as pretty print JSON
+Get OpenWeather API data
+    ${response}    GET    ${weather_url}    expected_status=200    params=&{params}
     ${response_json}    Set Variable    ${response.json()}
-    Log    ${response_json}    repr=True
-    comment    Accessing the values individually
-    Log    City: ${response.json()["name"]}
-    Log    Temperature: ${response.json()["main"]["temp"]}
-    Log    Clime: ${response.json()["weather"][0]["main"]}
-    comment    Handling the response as a JSON
-    ${city}    Get Value From Json    ${response_json}    $.name
-    ${temperature}    Get Value From Json    ${response_json}    $.main.temp
-    ${clime}    Get Value From Json    ${response_json}    $.weather[0].main
-    Log    City: ${city[0]}
-    Log    Temperature: ${temperature[0]}
-    Log    Clime: ${clime[0]}
-
-Connect Github API
-    Create Session    github    http://api.github.com    disable_warnings=1
-
-Show user Information
-    [Arguments]    ${username}
-    ${response}    GET On Session    github    /users/${username}
-    Log    ${response.json()["name"]}
-    Log    ${response.json()["location"]}
     comment    Complete response as pretty print JSON
-    ${response_json}    Set Variable    ${response.json()}
     Log    ${response_json}    repr=True
-    comment    Handling the response as a JSON
-    ${name}    Get Value From Json    ${response_json}    $..name
-    ${location}    Get Value From Json    ${response_json}    $..location
-    Log    ${name[0]}
-    Log    ${location[0]}
+    Set Test Variable    ${response_json}
+
+Show City "${data}" Information
+    [Documentation]    Getting information generically through JSONPATH (The city is on &{params} 'id')
+    ${info}    Get Value From Json    ${response_json}    $..${data}
+    Log    ${data}: ${info[0]}
+
+Get Github user "${user}" API data
+    ${response}    GET    ${github_url}${user}    expected_status=200
+    ${response_json}    Set Variable    ${response.json()}
+    comment    Complete response as pretty print JSON
+    Log    ${response_json}    repr=True
+    Set Test Variable    ${response_json}
+
+Show user "${data}" Information
+    [Documentation]    Getting information generically through python dict
+    Log    ${data}: ${response_json["${data}"]}
