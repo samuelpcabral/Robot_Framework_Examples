@@ -1,18 +1,22 @@
 *** Settings ***
-Library           SoapLibrary
+Documentation     Test suite for demonstration only, using robotframework==5.0.1, robotframework-soaplibrary==1.0
+...    and robotframework-jsonlibrary==0.4.1
 Library           Collections
 Library           DateTime
+Library           SoapLibrary
 Library           JSONLibrary
+
 
 *** Variables ***
 # ipGeo
-${wsdl_ip_geo}       http://ws.cdyne.com/ip2geo/ip2geo.asmx?wsdl
-&{br_ip_address}     ws:ipAddress=150.162.2.1
+${WSDL_IP_GEO}       http://ws.cdyne.com/ip2geo/ip2geo.asmx?wsdl
+&{BR_IP_ADDRESS}     ws:ipAddress=150.162.2.1
 # PostOffice
-${wsdl_correios}     https://apps.correios.com.br/SigepMasterJPA/AtendeClienteService/AtendeCliente?wsdl
-&{br_postal_code}    cep=01305901
+${WSDL_CORREIOS}     https://apps.correios.com.br/SigepMasterJPA/AtendeClienteService/AtendeCliente?wsdl
+&{BR_POSTAL_CODE}    cep=01305901
 # Holidays
-${wsdl_holidays}     http://services.sapo.pt/Metadata/Contract/Holiday?culture=PT?wsdl
+${WSDL_HOLIDAYS}     http://services.sapo.pt/Metadata/Contract/Holiday?culture=PT?wsdl
+
 
 *** Test Cases ***
 ipGeo getData
@@ -28,7 +32,7 @@ ipGeo getData with XML
     Connect ipGeo API
     List ipGeo Info with XML
 
-PostOffice_GetAddress
+PostOffice GetAddress
     [Documentation]    Request to SOAP webservice passing XML in body and response as XML object
     [Tags]    Webservice    SOAP
     Fill XML po template
@@ -39,85 +43,86 @@ List All City Holidays
     [Documentation]    Request to SOAP webservice and using dynamic keywords, also using log as an html table
     [Tags]    Webservice    SOAP
     Connect Holidays API
-    List "Fundão" Holidays "2021"
-    List "Lisboa" Holidays "2022"
+    List "Fundão" Holidays "2022"
+    List "Lisboa" Holidays "2023"
+
 
 *** Keywords ***
 Connect ipGeo API
-    Create SOAP Client    ${wsdl_ip_geo}
+    Create SOAP Client    ${WSDL_IP_GEO}
 
 List ipGeo Info
-    comment    Since the request always needs only two arguments, they can be passed in the correct sequence as keyword arguments.
-    ${response}    Call SOAP Method    ResolveIP    ${br_ip_address}[ws:ipAddress]    0
-    log   ${response}
-    ${country}    Get From Dictionary    ${response}    Country
-    ${latitude}    Get From Dictionary    ${response}    Latitude
-    ${longitude}    Get From Dictionary    ${response}    Longitude
-    Log    The ip address ${br_ip_address}[ws:ipAddress] belongs to ${country} at lat: ${latitude} long: ${longitude}
+    comment    Since the request always needs only two arguments, they can be passed in the correct
+    ...    sequence as keyword arguments.
+    ${RESPONSE}    Call SOAP Method    ResolveIP    ${BR_IP_ADDRESS}[ws:ipAddress]    0
+    log   ${RESPONSE}
+    ${COUNTRY}    Get From Dictionary    ${RESPONSE}    Country
+    ${LATITUDE}    Get From Dictionary    ${RESPONSE}    Latitude
+    ${LONGITUDE}    Get From Dictionary    ${RESPONSE}    Longitude
+    Log    The ip address ${BR_IP_ADDRESS}[ws:ipAddress] belongs to ${COUNTRY} at lat: ${LATITUDE} long: ${LONGITUDE}
 
 Fill XML ip template
-    Edit XML Request    ${CURDIR}/ip_address_template.xml    ${br_ip_address}    new_ip_address
+    Edit XML Request    ${CURDIR}/ip_address_template.xml    ${BR_IP_ADDRESS}    new_ip_address
 
 List ipGeo Info with XML
-    ${response}    Call SOAP Method With XML    ${CURDIR}/new_ip_address.xml
-    ${dict_response}    Convert XML Response to Dictionary    ${response}
-    log   ${dict_response}
-    ${body} 	Get From Dictionary    ${dict_response}    Body
-    ${resolveipresponse} 	Get From Dictionary    ${body}    ResolveIPResponse
-    ${resolveipresult} 	Get From Dictionary    ${ResolveIPResponse}    ResolveIPResult
-    ${country}    Get From Dictionary    ${ResolveIPResult}    Country
-    ${latitude}    Get From Dictionary    ${ResolveIPResult}    Latitude
-    ${longitude}    Get From Dictionary    ${ResolveIPResult}    Longitude
-    Log    The ip address ${br_ip_address}[ws:ipAddress] belongs to ${country} at lat: ${latitude} long: ${longitude}
+    ${RESPONSE}    Call SOAP Method With XML    ${CURDIR}/new_ip_address.xml
+    ${DICT_RESPONSE}    Convert XML Response to Dictionary    ${RESPONSE}
+    log   ${DICT_RESPONSE}
+    ${BODY} 	Get From Dictionary    ${DICT_RESPONSE}    Body
+    ${RESOLVEIPRESPONSE} 	Get From Dictionary    ${BODY}    ResolveIPResponse
+    ${RESOLVEIPRESULT} 	Get From Dictionary    ${RESOLVEIPRESPONSE}    ResolveIPResult
+    ${COUNTRY}    Get From Dictionary    ${RESOLVEIPRESULT}    Country
+    ${LATITUDE}    Get From Dictionary    ${RESOLVEIPRESULT}    Latitude
+    ${LONGITUDE}    Get From Dictionary    ${RESOLVEIPRESULT}    Longitude
+    Log    The ip address ${BR_IP_ADDRESS}[ws:ipAddress] belongs to ${COUNTRY} at lat: ${LATITUDE} long: ${LONGITUDE}
 
 Fill XML po template
-    Edit XML Request    ${CURDIR}/postal_code_template.xml    ${br_postal_code}    new_postal_code
+    Edit XML Request    ${CURDIR}/postal_code_template.xml    ${BR_POSTAL_CODE}    new_postal_code
 
 Connect Post Office API
-    Create SOAP Client    ${wsdl_correios}
+    Create SOAP Client    ${WSDL_CORREIOS}
 
 List address information
-    ${response}    Call SOAP Method With XML    ${CURDIR}/new_postal_code.xml
+    ${RESPONSE}    Call SOAP Method With XML    ${CURDIR}/new_postal_code.xml
     comment    This response below is a XML object, so we can use the keyword 'Get Data From XML By Tag'
-    log    ${response}
-    ${postal_code}    Get Data From XML By Tag    ${response}    cep
-    ${city}    Get Data From XML By Tag    ${response}    cidade
-    ${street}    Get Data From XML By Tag    ${response}    end
-    ${state}    Get Data From XML By Tag    ${response}    uf
-    Log    the postal code ${postal_code} belongs to ${street}, ${city} - ${state}
+    log    ${RESPONSE}
+    ${POSTAL_CODE}    Get Data From XML By Tag    ${RESPONSE}    cep
+    ${CITY}    Get Data From XML By Tag    ${RESPONSE}    cidade
+    ${STREET}    Get Data From XML By Tag    ${RESPONSE}    end
+    ${STATE}    Get Data From XML By Tag    ${RESPONSE}    uf
+    Log    the postal code ${POSTAL_CODE} belongs to ${STREET}, ${CITY} - ${STATE}
 
 Connect Holidays API
-    Create SOAP Client    ${wsdl_holidays}
+    Create SOAP Client    ${WSDL_HOLIDAYS}
 
-List "${city}" Holidays "${year}"
-    ${city_id}    Get city Id    ${city}
-    ${response}    Call SOAP Method    GetHolidaysByMunicipalityId    ${year}    ${city_id}    true
-    ${len}    Get Length    ${response}
-    ${table}    Set Variable    <!DOCTYPE html><html><head></head><body><table border="1">
-    ${table}    Catenate    ${table}    <caption><h1>Feriados ${city} ${year}</h1></caption>
-    ${table}    Catenate    ${table}    <tr><th>Data</th> <th>Nome</th> <th>Tipo</th><th>Descrição</th></tr>
-    FOR    ${index}    IN RANGE    ${len}
-        ${get_date}    Set Variable    ${response[${index}]['Date']}
-        ${date}    Convert Date    ${get_date}    result_format=datetime
-        ${table}    Catenate    ${table}    <tr><td>${date.day}/${date.month}/${date.year}</td>
-        ${table}    Catenate    ${table}    <td>${response[${index}]['Name']}</td>
-        ${table}    Catenate    ${table}    <td>${response[${index}]['Type']}</td>
-        ${table}    Catenate    ${table}    <td>${response[${index}]['Description']}</td></tr>
+List "${CITY}" Holidays "${YEAR}"
+    ${CITY_ID}    Get city Id    ${CITY}
+    ${RESPONSE}    Call SOAP Method    GetHolidaysByMunicipalityId    ${YEAR}    ${CITY_ID}    true
+    ${LEN}    Get Length    ${RESPONSE}
+    ${TABLE}    Set Variable    <!DOCTYPE html><html><head></head><body><table border="1">
+    ${TABLE}    Catenate    ${TABLE}    <caption><h1>Feriados ${CITY} ${YEAR}</h1></caption>
+    ${TABLE}    Catenate    ${TABLE}    <tr><th>Data</th> <th>Nome</th> <th>Tipo</th><th>Descrição</th></tr>
+    FOR    ${INDEX}    IN RANGE    ${LEN}
+        ${GET_DATE}    Set Variable    ${RESPONSE[${INDEX}]['Date']}
+        ${DATE}    Convert Date    ${GET_DATE}    result_format=datetime
+        ${TABLE}    Catenate    ${TABLE}    <tr><td>${DATE.day}/${DATE.month}/${DATE.year}</td>
+        ${TABLE}    Catenate    ${TABLE}    <td>${RESPONSE[${INDEX}]['Name']}</td>
+        ${TABLE}    Catenate    ${TABLE}    <td>${RESPONSE[${INDEX}]['Type']}</td>
+        ${TABLE}    Catenate    ${TABLE}    <td>${RESPONSE[${INDEX}]['Description']}</td></tr>
     END
-    ${table}    Catenate    ${table}    </table></body></html>
-    log    ${table}    html=True
+    ${TABLE}    Catenate    ${TABLE}    </table></body></html>
+    log    ${TABLE}    html=True
 
 Get city Id
-    [Arguments]    ${city}
-    ${response}    Call SOAP Method    GetLocalHolidays    2020
-    ${len}    Get Length    ${response}
-    FOR    ${index}    IN RANGE    ${len}
-        ${id}    Set Variable    ${response[${index}]['Municipality']['Id']}
-        ${name}    Set Variable    ${response[${index}]['Municipality']['Name']}
-        comment    New IF syntax in Robot 4.0
-        IF    '${name}'=='${city}'
-            ${city_id}    Set Variable    ${id}
-            Exit For Loop
+    [Arguments]    ${CITY}
+    ${RESPONSE}    Call SOAP Method    GetLocalHolidays    2020
+    ${LEN}    Get Length    ${RESPONSE}
+    FOR    ${INDEX}    IN RANGE    ${LEN}
+        ${ID}    Set Variable    ${RESPONSE[${INDEX}]['Municipality']['Id']}
+        ${NAME}    Set Variable    ${RESPONSE[${INDEX}]['Municipality']['Name']}
+        IF    '${NAME}'=='${CITY}'
+            ${CITY_ID}    Set Variable    ${ID}
+            BREAK
         END
     END
-    [Return]    ${city_id}
+    RETURN    ${CITY_ID}

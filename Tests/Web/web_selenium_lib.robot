@@ -1,66 +1,60 @@
 *** Settings ***
 Documentation     Simple test using Selenium, imported variables and keywords from python.
-Suite Setup       Open Page and Close Pop Up
 Suite Teardown    Close Browser
-Library           SeleniumLibrary
 Library           BuiltIn
+Library           SeleniumLibrary
 Library           Keywords.py
 Variables         Variables.py
+
 
 *** Test Cases ***
 Verify Checkbox
     [Documentation]    This test randomly marks 1 of the 4 checkboxes on the page and checks whether it is actually
     ...    checked. After that, the functionality of the "check all" button is tested.
     [Tags]    Web    Selenium
-    Open Checkbox Menu
+    Open Web Page
+    Put All Uncheck
     Click Random Checkbox
     Click Check All
     Verify All Checkbox Check
     Click Uncheck All
     Verify All Checkbox Uncheck
 
+
 *** Keywords ***
 Open Web Page
-    Open Browser    ${url}    ${browser}
+    Open Browser    ${URL}    ${BROWSER}
     Maximize Browser Window
 
-Close the Pop Up
-    Wait Until Element Is Visible    ${pop_up_no_button}
-    Click Element    ${pop_up_no_button}
-
-Open Page and Close Pop Up
-    Open Web Page
-    Close the Pop Up
-
-Open Checkbox Menu
-    Click Element    ${input_forms}
-    Click Element    ${checkbox_demo}
-    Scroll Element Into View    ${check_button}
-    Capture Page Screenshot
-
 Click Random Checkbox
-    ${number}    Generate Random Number    1    4
-    ${checkbox_number}    Replace Variables    ${checkbox}
-    Select Checkbox    ${checkbox_number}
+    ${NUMBER}    Generate Random Number    1    4
+    ${CHECKBOX_NUMBER}    Replace Variables    ${CHECKBOX}
+    Select Checkbox    ${CHECKBOX_NUMBER}
     Capture Page Screenshot
-    Checkbox Should Be Selected    ${checkbox_number}
+    Checkbox Should Be Selected    ${CHECKBOX_NUMBER}
 
 Click Check All
-    Click Button    ${check_button}
+    Click Element    ${ALL}
 
 Click Uncheck All
-    Click Button    ${check_button}
+    Click Element    ${ALL}
+
+Put All Uncheck
+    Wait Until Element Is Visible    ${ALL}
+    Scroll Element Into View    ${ACCESSIBILITY}
+    Click Element    ${ALL}
+    Click Element   ${ALL}
 
 Verify All Checkbox Check
     Capture Page Screenshot
-    FOR    ${number}    IN RANGE    1    5
-        ${checkbox_number}    Replace Variables    ${checkbox}
-        Checkbox Should Be Selected    ${checkbox_number}
+    FOR    ${NUMBER}    IN RANGE    1    5
+        ${CHECKBOX_NUMBER}    Replace Variables    ${CHECKBOX}
+        Checkbox Should Be Selected    ${CHECKBOX_NUMBER}
     END
 
 Verify All Checkbox Uncheck
     Capture Page Screenshot
-    FOR    ${number}    IN RANGE    1    5
-        ${checkbox_number}    Replace Variables    ${checkbox}
-        Checkbox Should Not Be Selected    ${checkbox_number}
+    FOR    ${NUMBER}    IN RANGE    1    5
+        ${CHECKBOX_NUMBER}    Replace Variables    ${CHECKBOX}
+        Checkbox Should Not Be Selected    ${CHECKBOX_NUMBER}
     END
